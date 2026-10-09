@@ -12,6 +12,7 @@ live in slots that are not body text:
 
     python3 check_deliverable.py Client_Impact_Measurement_Assessment_Sept2026.docx
     python3 check_deliverable.py index.html
+    python3 check_deliverable.py evidence.html      # the appendix page, when there is one
 
 If the product name differs from the company name, name it so it is not read as
 residue from another client:
@@ -33,7 +34,8 @@ TITLE_SLOT_PATTERNS = [
 
 PRIOR_CLIENTS = ['Breathe for Change', 'BFC', 'Snorkl', 'Journify', 'Doorman',
                  'Innovamat', 'Derivita', 'M.S.Ed', 'William Jewell',
-                 'Human Intelligence', 'Yoga Ed', 'xSEL', 'SELweb']
+                 'Human Intelligence', 'Yoga Ed', 'xSEL', 'SELweb',
+                 'StarCoach']
 
 # Unfilled template placeholders. The template marks every client slot with
 # [bracketed prose] saying what belongs there; any that survives into a client
