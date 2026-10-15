@@ -7,14 +7,15 @@ client-specific slot carries a `[bracketed placeholder]` describing what belongs
 both tracks plus all six priority cards are present as structure to delete from. It mirrors
 what `COBALT_IMA_TEMPLATE` does on the Word side.
 
-Clone this. Do not clone a client repo — `bfc-ima`, `xsel-labs-ima`, `snorkl-ima` and
-`journify_ima` are delivered deliverables, and starting from one means inheriting their
+Clone this. Do not clone a client repo — `bfc-ima`, `xsel-labs-ima`, `snorkl-ima`,
+`journify_ima`, `paper-ima` and `lando-ima` are delivered deliverables, and starting from one means inheriting their
 content and their embedded PDF.
 
 **Read a finished report alongside this one.** Placeholders tell you what goes in a slot;
 they cannot show you how long a priority body actually runs, what a good evidence row looks
-like, or how figure labels sit in their boxes. Open **`xsel-labs-ima`** for that — it is
-single-track, four priorities, and carries every current section. Read it; never clone it.
+like, or how the theory-of-change drawers read. Open **`lando-ima`** for that — it is
+single-track, four priorities, uses the ToC figure, and carries every current section. Read
+it; never clone it. (`xsel-labs-ima` predates the ToC figure; read it for prose only.)
 
 If the chrome needs a fix, fix it **here** and re-push, then propagate to whichever client
 files are still live.
@@ -44,6 +45,9 @@ text]` telling you what belongs there and roughly how long it should run.
 | `index.html` | The report. Markup + JS + SVG. **Canonical template.** |
 | `styles.css` | All CSS. Chrome — do not edit per client. |
 | *(no PDF file)* | The Doc's PDF is embedded **inside** `index.html` as base64 — not a separate repo file. |
+| `evidence.html` | The evidence review appendix page. Shares `styles.css`. |
+| `toc_figure.py` | Builds the theory-of-change figure from the client's ToC slide. See region 5. |
+| `check_deliverable.py` | Pre-delivery check: stale "Roadmap", unfilled placeholders, prior-client names. |
 | `bundle.py` | Inlines CSS into a single portable HTML in `dist/` (for email). |
 | `GENERATION.md` | This guide. |
 | `.gitignore` | Ignores `dist/`. |
@@ -76,7 +80,7 @@ re-commit it — the HTML will not update itself, and vice versa.
    `index.html` → `dist/<client>.html` and `styles.css` alongside it (keep the originals as the
    template). The copied HTML still links `styles.css` by relative path.
 2. Feed an LLM: (a) the source material for the new client — discovery notes, questionnaire,
-   public info; (b) this guide; (c) a finished client report — `xsel-labs-ima` — read as an example.
+   public info; (b) this guide; (c) a finished client report — `lando-ima` — read as an example.
 3. Instruct it to rewrite **only** the content regions listed below, preserving the chrome
    and all the coupling rules.
 4. Run the **post-generation checklist** at the bottom before sending.
@@ -109,7 +113,7 @@ the cover buttons via `openAboutModal()`.
 | Section id | Title | Notes |
 |---|---|---|
 | `#keyfindings` | Key Findings | Full-bleed tinted band, 2×2 card grid. Unnumbered. |
-| `#model` | The Impact Process Model | Interactive SVG + print-only description table. |
+| `#model` | Theory of Change | The client's ToC slide as an interactive figure + print-only description table. |
 | `#evidence` | Evidence Landscape | Table with inline source tooltips. |
 | `#opportunities` | Measurement Opportunities | Framing prose + dot legend. |
 | `#track1` | Track 1 — *(client-specific title)* | Priority accordion. |
@@ -137,8 +141,8 @@ in doubt, cut toward the low end — this is an executive brief.
 | 2 | Key Findings (4 cards) | `class="kf-card"` | title **8–14**, desc **20–28** (≈**100** total desc) | The executive summary. Keep the four descriptions balanced so the cards align. |
 | 3 | About modal | `id="about-modal"` | intro **60–90** | Mostly boilerplate; swap client name, source dates, discovery-conversation reference, and the `.about-sources` list. |
 | 3b | **About-the-client section** | `id="about-client"` | **60–90** | A short unnumbered section between Key Findings and the model. See "The About-the-client section" below. |
-| 4 | Process model prose | `id="model"` intro `<p>` | **55–85** | Narrative framing of the diagram. |
-| 5 | **The diagram** | `id="model-svg"` + the `nodes` object | box labels **2–5 words each**; each node `know`/`gaps` **30–60** | **The hardest region. See "The diagram trap" below.** |
+| 4 | Theory of Change intro | `id="model"` intro `<p>` | **55–85** | Copied from the finalized Doc. |
+| 5 | **The ToC figure** | `id="model-svg"` + the `nodes` object + the print-only table | `know` = the Doc row verbatim; `gaps` **30–60** | **Built by `toc_figure.py`, never by hand. See "The theory-of-change figure" below.** |
 | 6 | Evidence Landscape | `id="evidence-table"` + closing `<p>` | **6 rows**; closing para **80–110** | Rows = the client's existing evidence assets. Keep cell copy terse. |
 | 7 | Opportunities framing | `id="opportunities"` intro `<p>`s | **3 paras, ≈200 total** (buyer-reality para **80–90**) | Includes the two-track framing. |
 | 8 | Matrix column labels | `priority-matrix-key` | labels only | The four audience/buyer columns. Must match the `.pm-dots` order in every card. |
@@ -153,7 +157,7 @@ in doubt, cut toward the low end — this is an executive brief.
 ## The About-the-client section (region 3b)
 
 A short unnumbered section titled "About [Client]", sitting between Key Findings and the
-Impact Process Model. One paragraph, no subheadings. It carries a section header, a section
+Theory of Change. One paragraph, no subheadings. It carries a section header, a section
 rule, a sidebar nav entry and a `navMap` entry like any other section — it is simply much
 shorter than the rest.
 
@@ -181,9 +185,9 @@ because a reader who knows the company will otherwise wonder whether they were m
 
 **What it does not contain:**
 
-- **Anything already in the figure's implementation-context box.** Credits, price, duration,
-  accreditation, delivery mode, administration time — the box carries those. Restating them
-  spends the paragraph's whole budget on nothing. Check the box before writing.
+- **Anything already in the ToC's context band.** Credits, price, duration,
+  accreditation, delivery mode, administration time — the band carries those. Restating them
+  spends the paragraph's whole budget on nothing. Check the band before writing.
 - **Analysis.** It states what the thing is. Key Findings said what we concluded, and the
   model does the causal work. This section makes no claim beyond description and scope.
 - **Marketing language.** If it reads like the client's homepage, it is doing their writing
@@ -278,40 +282,71 @@ update itself.
 
 ---
 
-## The diagram trap (region 5) — read before touching the model figure
+## The theory-of-change figure (region 5)
 
-The figure is **one SVG** (`id="model-svg"`) containing both the model and the measurement
-overlay. There is **no** `switchView()` and **no** second `#view-meas` SVG — an earlier
-version of this template worked that way and the guide has been corrected. The measurement
-layer is a group, `id="meas-layer"`, shown/hidden by the `toggleBadges()` switch above the
-figure.
+The model figure is the client's **completed theory of change**: the one-slide figure made
+with the toc-synthesizer skill, finalized in the client's Drive folder. It replaced the old
+seven-box impact process model in October 2026 (Paper and Lando were the first two). The
+section is titled **Theory of Change**. The same slide appears in three places, and all three
+must come from the same version of it:
 
-The model has **7 nodes**: `product, impl, behavior, outcome, mech1, mech2, user`.
-For each node, content lives in coupled places that must stay in sync:
+1. **The Doc figure**, inserted as an image (468 pt wide, centered) under the section intro.
+2. **The Doc's Model Description table**: one row for the context band, one per ToC column in
+   slide order, and one for the lower band (a loop or causal chain) if the ToC has one.
+   Row labels are the slide's own headings.
+3. **The HTML figure**, built by `toc_figure.py`.
 
-1. **SVG `<text>` labels** — the visible box text, positioned by hand-tuned `x`/`y`
-   coordinates. Rewrite the *words*; keep them short enough to fit; **do not change
-   coordinates** unless you re-check the layout visually.
-2. **Clickable `<rect ... onclick="show('<id>')">`** — the hit region. The `id` string must
-   match a key in the `nodes` object. Don't rename ids.
-3. **The `nodes` JS object** (search `const nodes`) — the drawer content shown when a box is
-   clicked: `cat`, `title`, `tip`, `badge`, `badgeText`, `know`, `gaps`. Real per-client
-   prose. The `badge` field (`ok` / `par` / `gap`) drives the colored confidence pill — set it
-   to reflect how well-understood that part of the chain is.
-4. **Box styling encodes confidence.** White + solid border = confirmed. Green = context.
-   Blue = mechanism. **Amber + dashed border = needs confirmation / needs definition.** If you
-   change a node's `badge` to `gap`, restyle its `<rect>` to amber-dashed and make sure the
-   legend still matches.
-5. **Measurement overlay** (`id="meas-layer"`) — per priority: a `.priority-badge-group`
-   (`data-priority`, `onclick="openPriorityCard('<id>')"`), one or more `.connector-line`
-   elements with the same `data-priority`, and the `.dim-overlay` rects. Badge ids must match
-   the `priorityData` keys and the priority card ids.
-6. **The `priorityData` JS object** (search `const priorityData`) — fills the priority drawer.
-   One entry per priority; keep consistent with the priority cards (region 9).
+If the client edits the slide after the Doc is drafted, update all three.
 
-**Rule:** if you change a node's meaning, update all of the above for that node. If you change
-the *number or identity* of nodes, you are redrawing the figure — that's a layout job, not a
-content swap. Do it deliberately and eyeball the result.
+### Building the HTML figure
+
+The figure is never drawn by hand. `toc_figure.py` turns the slide into an inline vector
+drawing (sharp at any zoom, about 0.8 MB) and lays the interactive parts over it.
+
+1. **Read the slide's geometry.** Slides `read_presentation` with the field mask in the
+   script's docstring, then:
+   `python3 toc_figure.py regions <tool-results file> > figure.json`
+   This finds the context band, one region per column (header pill down to the last box in
+   the column) and each lower-band box, named `context`, `col1…colN`, `band1…bandN`.
+2. **Edit `figure.json`.** Rename the ids to short words that fit the client (`teachers`,
+   `app`, `students`…). Delete regions that should not be clickable, such as a "Where data
+   come from" note. Add one entry per priority: `id` (the `priorityData` key), `label`
+   (`P1`, `P2`… so the badges do not clash with the ToC's own numbered question markers),
+   `color` (closed set below) and `nodes` (the regions that priority measures).
+3. **Export the slide**: Drive `download_file_content` on the Slides file with
+   `exportMimeType: application/pdf`, decoded from the tool-results file.
+4. **Write the `nodes` object and `priorityData` with the same ids**, then run
+   `python3 toc_figure.py build index.html --pdf toc.pdf --spec figure.json`.
+   It replaces the whole `<svg id="model-svg">` element (re-running is safe) and refuses to
+   build if a region has no `nodes` entry, a `nodes` key has no region, or a priority id or
+   node is unknown.
+
+### What goes where
+
+- **Clickable regions**: one per Model Description row, and nothing else. A click opens the
+  drawer for the `nodes` entry with the same id.
+- **`nodes` entries**: `know` is the Doc's Model Description row **word for word**, so the
+  drawer and the print table cannot disagree. `gaps` quotes the ToC's open question(s) for
+  that element by number and names the priority that answers each. `badge` follows the
+  slide's legend: `ok` (all boxes solid, "Observed"), `par` (mixed, "Partly observed"),
+  `gap` (all dashed, "Described, not yet verified").
+- **Priority badges** sit in a strip just right of the slide, not on it: the ToC carries its
+  own numbered markers, and a badge placed on a box hides content. Hovering a badge draws
+  connector lines to its regions and dims the rest; clicking opens the priority drawer.
+  Colours are the closed set `#1a6fff`, `#059669`, `#d97706`, `#718096`.
+- **The print-only Model Description table** mirrors the Doc table row for row.
+
+### Traps
+
+- **Do not round the SVG's coordinates to save space.** It broke the render. The script
+  only collapses whitespace between tags.
+- **Do not embed the slide as a base64 `<image>`.** It works, but adds a third to the size
+  (Lando went from 1.9 MB to 2.2 MB). The script inlines it.
+- **Do not use a screenshot.** A raster blurs in full-screen mode and the text is not
+  selectable.
+- **Inserting the slide into the Doc without a public URL**: Docs `insertInlineImage` with
+  the `contentUrl` from Slides `read_slide_page_thumbnail` (large size). The URL is
+  short-lived, so insert it straight away.
 
 ---
 
@@ -337,9 +372,8 @@ for every client — there is no per-client image slot, and no third file to upl
   `downloadPDF()`, the scroll-spy `IntersectionObserver` + `navMap`, and the sticky-TOC
   `--toc-pin` logic. You edit the JS **data** — `nodes`, `priorityData`, `navMap` keys, and
   the `PDF_B64` / `PDF_NAME` values — never the function bodies.
-- SVG **geometry**: `<rect>`/`<line>`/`<marker>`/`<defs>` coordinates, arrowheads, filters,
-  the dim-overlays and connector lines. Only the `<text>` *words* and the confidence
-  fill/stroke are content.
+- The `#model-svg` figure: generated by `toc_figure.py`. Change the slide or `figure.json`
+  and re-run the script; never edit the generated SVG.
 - The cover topbar, the Cobalt Collective logo SVG, the footer brand, and the
   `cobaltcollective.org` author identity.
 - The `.print-only` Model Description block — hidden on screen, restored in print.
@@ -378,7 +412,9 @@ for every client — there is no per-client image slot, and no third file to upl
 - [ ] `PDF_B64` regenerated from **this client's** final Doc, and `PDF_NAME` updated.
       Verified by round-trip: extracted, decoded, SHA-256 matches the source PDF.
       Then click the button in a browser and confirm the downloaded file opens correctly.
-- [ ] Open in a browser: every model-diagram box click opens a drawer with matching content.
+- [ ] The ToC figure, the Doc's figure and the Model Description rows all come from the same
+      version of the slide, and each `know` matches its Doc row word for word.
+- [ ] Open in a browser: every ToC region click opens a drawer with matching content.
 - [ ] Toggle "Show measurement priorities": badges appear; hovering a badge highlights its
       connector lines and dims the other nodes; clicking opens the right priority drawer.
 - [ ] Full-screen button on the figure expands and collapses.
@@ -391,7 +427,7 @@ for every client — there is no per-client image slot, and no third file to upl
 - [ ] Print/PDF preview looks right (the print-only Model Description renders; TOC and topbar
       are hidden; priority card bodies are expanded).
 - [ ] The About-the-client section names the client, the user, the buyer and the scope
-      boundary, repeats nothing from the figure's implementation-context box, and has both
+      boundary, repeats nothing from the ToC's context band, and has both
       a nav link and a `navMap` entry.
 - [ ] "What Changes If You Do This" is specific to this client — swapping the company name
       into the next report would produce nonsense, not a usable paragraph — carries no hedges,
